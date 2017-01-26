@@ -1,0 +1,14 @@
+{
+  "name":"raccoon-bot",
+  "id": "<@!268819180810272770>",
+  "username" : "Raccoon#7508",
+  "version": "1.0",
+  "token":"MjY4ODE5MTgwODEwMjcyNzcw.C1gcFw.HEmZin9bfTgXbmt1otP1PBxInoc",
+  "prefix" : "[",
+  "author":"<@!205074810810793984>",
+  "url_join" : "https://discordapp.com/api/oauth2/authorize?client_id=268819180810272770&scope=bot&permissions=0",
+  "guids":{
+    "eslachance" : "https://eslachance.gitbooks.io/discord-js-bot-guide/content/",
+    "discordjsdoc" : "https://discord.js.org/#/docs/main/stable/general/welcome"
+  }
+}
