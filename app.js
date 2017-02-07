@@ -1,59 +1,89 @@
 var Discord = require('discord.js');
 var client = new Discord.Client();
+const config = require('./config.json');
+const alpha = require('./alpha_pt.json');
+const SERVER_NAME = config.server;
 
+var util = require('./utility.js');
 
-//var util = require('scripts/utility.js');
-const config = require('./config.json')
-const msg = require('./scripts/messages.js');
+var colorIndex = 0;
 
-client.login(config.token);
+var commands = require('./commands.js');
+const MSG = require('./messages.js');
+const RAINBOW = require('./rainbow.js');
+
+client.on("ready",function(){
+  if(client.guilds.find('name',config.server))
+  {
+    client.guilds.find('name',config.server).channels.find('name','general')
+      .sendMessage(`Hi fuckers I'm Online!`);
+  }
+
+});
 
 client.on("guildMemberAdd", (member) => {
- member.guild.defaultChannel
- .sendMessage('Bem vindo '+ member.user.username +' ao server'+ member.guild.name
- +'\n Escreva [abreviacao_do_jogo para ser atribuido ao perfil: \n '
- +config.prefix+'tos se você ainda joga Tree of Savior \n '
- +config.prefix+'lol se você joga League of Legends \n '
- +config.prefix+'ow se você joga Overwatch');
+    member.guild.defaultChannel.sendMessage(MSG.MS_WELCOME);
 });
 
-client.on('message',function(message){
-  let params = message.content.replace(config.prefix,'').split(" ");
+client.on("guildMemberRemove", (member)=>{
+  member.channels.find('name','general')
+  .sendMessage(MSG.MS_MEMBER_REMOVE).catch(console.error);
+});
 
-//Test \/
-  switch(message.content){
-    case config.prefix+"clean":
-    // get number of messages to prune
-    let messagecount = parseInt(params[0]);
-    let userIdMessageDelete = params[1].substring(3,21);
+client.on("message", m => {
+   var msgContent = m.content.toLowerCase();
+   var server = m.channel.server;
 
-  // get the channel logs
-    message.channel.fetchMessages({limit: 100})
-   .then(messages => {
-      let msg_array = messages.array();
-      // filter the message to only your own
+   var user = m.author;
+   var role;
 
-      if(userIdMessageDelete !== null || userIdMessageDelete !== undefined){
-        msg_array = msg_array.filter(m => m.author.id === userIdMessageDelete);
-      }
+   var channel;
+   var reserved;
+   var comando = msgContent.split(' ')[0];
 
-      // limit to the requested number + 1 for the command message
-      msg_array.length = messagecount + 1;
-
-      // Has to delete messages individually. Cannot use `deleteMessages()` on selfbots.
-      msg_array.map(m => m.delete()
-      .catch(console.error))
-
-   });
+  switch(comando){
+    case commands.cleanMessages:
+      util.deleteMessages(m, commands.cleanMessages, false);
     break;
-    case config.prefix+"bot":
-        message.channel.sendMessage("I was created by <@!205074810810793984> to supply this server called "+message.channel.server.name+" of the Owner "+message.channel.server.owner.username);
+    case  commands.joinServer:
+      m.reply(MSG.MS_JOIN+config.url_join);
     break;
-    case config.prefix+"drole":
-       client.roleDelete(params[1]);
+
+    case commands.botDesc:
+        m.channel.sendMessage(`I was created by ${config.author} to supply this server chamado ${m.guild.name}`);
     break;
-    case config.prefix+"join":
-      message.reply("I'd like join to your server: \n "+config.url_join+"");
+
+//---@TODO TEST---------------------------------------------
+    case commands.overwatch:
+    //  m.guild.members.find('id',m.author.id).addRole(m.guild.roles.find("name", "Overwatch"));
     break;
+    case commands.leagueOfLegends:
+    //  m.guild.members.find('id',m.author.id).addRole(m.guild.roles.find("name", "League of Legends"));
+    break;
+    case "?":
+      m.channel.sendMessage(`I don't know, brow, try search in the www.google.com`);
+    break;
+    case commands.konamiCode:
+       console.log('Rainbow Unlocked '+m.author.username);
+       m.channel.sendMessage("", {
+       embed: {
+        color: 3447003,
+        author: {
+          name: m.author.username,
+          icon_url: m.author.avatarURL
+        },
+        title: 'Congratulations!!',
+        description: `You've unlocked a secret of this server! \n`,
+      }});
+      //m.guild.members.find('id',m.author.id).addRole(m.channel.guild.roles.find("name","Rainbow"));
+      util.deleteMessages(m, commands.konamiCode, true);
+    break;
+
     }
 });
+
+process.on("unhandledRejection", err => {
+  console.error("Uncaught Promise Error: \n" + err.stack);
+});
+
+client.login(config.token);

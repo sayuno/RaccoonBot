@@ -1,0 +1,23 @@
+case commands.leaveServer:
+  if (client.memberHasRole(user, roles.get("name", "Masters of the System")) ||
+      client.memberHasRole(user, roles.get("name", "Master"))) {
+          client.sendMessage(m, MSG.MS_BYE);
+        } else {
+          m.reply(m, MSG.MS_NO_POWER);
+        }
+break;
+
+//    var data = util.dataEmbed('Titulo','Mensagem','005AE5');
+  //  m.channel.sendEmbed(new Discord.RichEmbed(data),`Congratz you've unlocked the <@!${Rainbow.id}>`);
+    //m.channel.sendMessage(`Congratz you've unlocked the <@!${Rainbow.id}>`);
+
+    cron.schedule('* * * * *',function(){
+      console.log(client.guilds);
+       client.guilds.find('name','Raccoon & Charizard Dev').roles.find("name", "Rainbow").setColor(RAINBOW.colors[colorIndex]).then(r => console.log("Set color of role " + r))
+      .catch(console.error);
+        colorIndex = colorIndex +1;
+        console.log(RAINBOW.colors[colorIndex]);
+        if(colorIndex === (RAINBOW.colors.length - 1)){
+          colorIndex = 0;
+        }
+    });
